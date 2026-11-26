@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="./style.css">
 <script defer src="./vendor/supabase-2.49.4.js"></script>
 <script defer src="./config.js?v=2"></script>
-<script defer src="./app.js"></script>
+<script defer src="./app.js?v=3"></script>
 </head>
 <body>
 <header class="top"><div class="wrap bar"><a class="brand" href="./"><span class="pixel" aria-hidden="true">+</span> R36S PORT HUB</a><nav aria-label="Conta"><a href="https://github.com/liralflsti-wq/r36s-port-hub">Projeto no GitHub</a><button id="logout" class="secondary" hidden>Sair</button></nav></div></header>
@@ -17,7 +17,6 @@
 <p id="message" class="message" role="status" aria-live="polite" hidden></p>
 <section class="panel" id="auth">
 <h2>Acesse sua conta</h2><p>Entre para enviar fotos ou logs e acompanhar seus chamados.</p>
-<button id="google" class="secondary" type="button">Continuar com Google</button>
 <form id="login"><label>E-mail<input name="email" type="email" autocomplete="email" required></label><label>Senha<input name="password" type="password" autocomplete="current-password" minlength="8" required></label><div class="actions"><button value="login">Entrar</button><button class="secondary" value="signup">Criar conta</button><button type="button" class="secondary" id="recover">Redefinir senha</button></div></form>
 <form id="reset" hidden><label>Nova senha<input name="password" type="password" autocomplete="new-password" minlength="8" required></label><button>Salvar senha</button></form>
 </section>

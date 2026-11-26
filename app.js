@@ -133,7 +133,6 @@ async function showSession(session) {
   byId("logout").hidden = !user;
   byId("auth").hidden = Boolean(user && !recovery);
   byId("login").hidden = recovery;
-  byId("google").hidden = recovery;
   byId("reset").hidden = !recovery;
   byId("workspace").hidden = true;
   if (!user || recovery) {
@@ -202,9 +201,6 @@ function start() {
       const result = await client.auth.signInWithPassword(credentials);
       message(result.error ? "Falha ao entrar. Confira a senha e a confirmação do e-mail." : "");
     }
-  });
-  byId("google").onclick = () => busy(byId("auth"), async () => {
-    checked(await client.auth.signInWithOAuth({provider: "google", options: {redirectTo}}));
   });
   byId("recover").onclick = () => busy(byId("auth"), async () => {
     const email = byId("login").elements.email;
