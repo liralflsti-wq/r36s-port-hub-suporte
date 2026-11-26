@@ -40,6 +40,44 @@ function checked(result) {
   return result.data;
 }
 
+function rtfText(value) {
+  return String(value ?? "").replace(/\r\n?/g, "\n").replace(/[\\{}\n\t]|[^\x20-\x7e]/g, (character) => {
+    if (character === "\n") return "\\line ";
+    if (character === "\t") return "\\tab ";
+    if ("\\{}".includes(character)) return "\\" + character;
+    const code = character.charCodeAt(0);
+    return "\\u" + (code > 32767 ? code - 65536 : code) + "?";
+  });
+}
+
+function exportTicket(ticket) {
+  const fields = [
+    ["Protocolo", ticket.id],
+    ["Título", ticket.title],
+    ["Data de abertura", new Date(ticket.created_at).toLocaleString("pt-BR")],
+    ["Modelo do console", ticket.console_model],
+    ["Sistema operacional", ticket.os],
+    ["Versão do Hub", ticket.hub_version || "Não informada"],
+    ["Status", statusLabels[ticket.status]],
+    ["Progresso", ticket.progress + "%"],
+    ["Descrição", ticket.description],
+    ["Atualização da equipe", ticket.resolution || "Sem atualização"],
+    ["Anexo", ticket.attachment_name || "Sem anexo"]
+  ];
+  const paragraphs = fields.map(([label, value]) =>
+    "\\b " + rtfText(label) + "\\b0\\line " + rtfText(value) + "\\par\\par "
+  ).join("");
+  const documentText = "{\\rtf1\\ansi\\uc1\\deff0{\\fonttbl{\\f0 Arial;}}"
+    + "\\f0\\fs36\\b R36S PORT HUB\\b0\\par\\fs24 Central de suporte\\par\\par "
+    + paragraphs + "}";
+  const url = URL.createObjectURL(new Blob([documentText], {type: "application/rtf"}));
+  const link = node("a");
+  link.href = url;
+  link.download = "chamado-r36s-" + ticket.id + ".rtf";
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function renderTicket(ticket) {
   const card = node("details");
   card.className = "ticket";
@@ -68,7 +106,15 @@ function renderTicket(ticket) {
     });
     card.append(download);
   }
-  if (admin) card.append(editTicket(ticket));
+  if (admin) {
+    const exportButton = node("button", "Exportar para Word");
+    exportButton.className = "secondary";
+    exportButton.onclick = () => exportTicket(ticket);
+    const actions = node("div");
+    actions.className = "actions";
+    actions.append(exportButton);
+    card.append(actions, editTicket(ticket));
+  }
   return card;
 }
 
