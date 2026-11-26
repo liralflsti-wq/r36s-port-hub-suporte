@@ -17,3 +17,19 @@
 }
 
 button.secondary.danger{color:#ff9cb8;border-color:#ff7099}
+
+@media screen {
+:root{--bg:#0e0f1c;--panel:#17172b;--border:#454060;--cyan:#19ddf1;--muted:#bbb9d0}
+body{background:radial-gradient(ellipse at 80% 0%,#1b1333,transparent 52rem),var(--bg)}
+header.top{background:#111220;border-color:#35304d}.brand,h1,h2,button{font-family:system-ui,sans-serif}.brand{font-size:1.15rem}.pixel{border-radius:7px;box-shadow:2px 2px #9f63e9}
+.hero{border-radius:22px;overflow:hidden;background:radial-gradient(ellipse at 85% 90%,#49216c,transparent 52%),linear-gradient(120deg,#141627,#201631);box-shadow:none;gap:18px}
+.hero h1{letter-spacing:-.045em}.hero h1 span{text-shadow:none}.eyebrow{margin-top:0}
+.console{position:relative;display:block;clip-path:none;transform:rotate(7deg);width:clamp(91px,23vw,170px);height:auto;aspect-ratio:0.79;padding:7%;padding:clamp(7px,1.4vw,14px);border-radius:13%;border:2px solid #ba81f4;background:linear-gradient(155deg,#b061dc,#5c298a 57%,#321945);box-shadow:inset 0 0 0 3px #bd87fa55,5px 6px 0 #352149,0 14px 30px #bf56fa66}
+.screen{font-size:clamp(.56rem,2vw,1rem);padding:12% 0;border-radius:7px;border-width:3px;line-height:1.35}.controls{margin-top:6%;font-size:clamp(1.25rem,4vw,2.1rem);color:#161326;text-shadow:1px 2px #ad75cf}.face-buttons{display:grid;grid-template-columns:1fr 1fr;gap:2px}.face-buttons i,.sticks i{display:grid;place-items:center;font-style:normal;border-radius:50%;background:#1a1527;box-shadow:0 2px #0c0910}.face-buttons i{width:clamp(10px,2.4vw,17px);aspect-ratio:1;color:var(--cyan);font:700 clamp(7px,1.4vw,10px) system-ui;text-shadow:none}.face-buttons i:nth-child(2){color:#80e16e}.face-buttons i:nth-child(3){color:#ff6489}.face-buttons i:nth-child(4){color:#ffd447}.sticks{display:flex;justify-content:space-between;margin-top:7%}.sticks i{width:24%;aspect-ratio:1;border:2px solid #554368}
+.panel{border-radius:17px;box-shadow:none;background:linear-gradient(135deg,#1b1a30,#151625)}#auth{margin-inline:auto;max-width:640px}#auth h2{font-size:clamp(1.4rem,4vw,2rem)}
+input,textarea,select,button{border-radius:9px}input,textarea,select{border-color:#62577d}button{font-weight:750}button.secondary{border-color:#73678e}#login .actions{display:grid;grid-template-columns:1fr;gap:10px}#login #recover{grid-row:1;justify-self:end;border:0;background:none;color:var(--cyan)}.password-field{position:relative}.password-field input{padding-right:90px}.password-field button{position:absolute;right:4px;top:50%;transform:translateY(-50%);min-height:32px;font-size:.85rem;padding:4px 8px}
+.upload{padding:14px;border:1px dashed #85809b;border-radius:10px;text-align:center}.upload input{border:none;padding:6px 0;font-size:.9rem}.upload input::file-selector-button{border:1px solid #62577d;border-radius:6px;background:#27243c;color:var(--text);padding:6px;margin-right:8px}
+#account{font-weight:650;overflow-wrap:anywhere}.ticket{border-radius:12px;background:#131628}.ticket[open]{background:#22203b;border-color:#7963a2}.ticket summary{display:flex;align-items:center;gap:8px;color:var(--text);list-style:none}.ticket summary::-webkit-details-marker{display:none}.ticket summary::before{content:"▸";color:var(--cyan)}.ticket[open] summary::before{content:"▾"}.ticket summary>span:first-child{flex:1;min-width:0}.ticket progress{margin-top:12px}
+.status{border:1px solid currentColor;border-radius:7px;padding:2px 6px;font-size:.75rem;text-align:center}.status-open{color:var(--cyan)}.status-resolved{color:var(--green)}footer{text-align:center}
+@media(max-width:480px){.hero{grid-template-columns:minmax(0,1fr) auto;gap:9px}.hero h1{font-size:clamp(1.65rem,8.2vw,2.65rem)}.hero .eyebrow{font-size:.68rem}.hero p:last-child{font-size:.88rem}.ticket summary{flex-wrap:wrap}.bar nav a{font-size:.82rem}}
+}

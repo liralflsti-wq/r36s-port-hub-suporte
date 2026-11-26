@@ -5,19 +5,19 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Abra e acompanhe chamados do R36S PORT HUB.">
 <title>Suporte | R36S PORT HUB</title>
-<link rel="stylesheet" href="./style.css?v=6">
+<link rel="stylesheet" href="./style.css?v=7">
 <script defer src="./vendor/supabase-2.49.4.js"></script>
 <script defer src="./config.js?v=2"></script>
-<script defer src="./app.js?v=6"></script>
+<script defer src="./app.js?v=7"></script>
 </head>
 <body>
 <header class="top"><div class="wrap bar"><a class="brand" href="./"><span class="pixel" aria-hidden="true">+</span> R36S PORT HUB</a><nav aria-label="Conta"><a href="https://github.com/liralflsti-wq/r36s-port-hub">Projeto no GitHub</a><button id="logout" class="secondary" hidden>Sair</button></nav></div></header>
 <main class="wrap">
-<section class="hero"><div><p class="eyebrow">R36S PORT HUB / SUPORTE</p><h1>Central de<br><span>suporte</span></h1><p>Encontrou um problema no seu console? Abra um chamado e acompanhe a correção.</p></div><div class="console" aria-hidden="true"><div class="screen">R36S<br><b>SUPORTE</b></div><div class="controls"><b>✚</b><span>● ●</span></div></div></section>
+<section class="hero"><div><p class="eyebrow">R36S PORT HUB / SUPORTE</p><h1>Central de<br><span>suporte</span></h1><p>Abra um chamado e acompanhe a solução.</p></div><div class="console" aria-hidden="true"><div class="screen">R36S<br><b>SUPORTE</b></div><div class="controls"><b class="dpad">✚</b><span class="face-buttons"><i>X</i><i>Y</i><i>A</i><i>B</i></span></div><div class="sticks"><i></i><i></i></div></div></section>
 <p id="message" class="message" role="status" aria-live="polite" hidden></p>
 <section class="panel" id="auth">
 <h2>Acesse sua conta</h2><p>Entre para enviar fotos ou logs e acompanhar seus chamados.</p>
-<form id="login"><label>E-mail<input name="email" type="email" autocomplete="email" required></label><label>Senha<input name="password" type="password" autocomplete="current-password" minlength="8" required></label><div class="actions"><button value="login">Entrar</button><button class="secondary" value="signup">Criar conta</button><button type="button" class="secondary" id="recover">Redefinir senha</button></div></form>
+<form id="login"><label>E-mail<input name="email" placeholder="voce@exemplo.com" type="email" autocomplete="email" required></label><label for="login-password">Senha</label><div class="password-field"><input id="login-password" name="password" type="password" autocomplete="current-password" minlength="8" required><button id="toggle-password" class="secondary" type="button" aria-controls="login-password">Mostrar</button></div><div class="actions"><button value="login">Entrar</button><button class="secondary" value="signup">Criar conta</button><button type="button" class="secondary" id="recover">Redefinir senha</button></div></form>
 <form id="reset" hidden><label>Nova senha<input name="password" type="password" autocomplete="new-password" minlength="8" required></label><button>Salvar senha</button></form>
 </section>
 <div id="workspace" hidden><p id="account"></p><div class="workspace">
@@ -28,9 +28,9 @@
 <label>Sistema operacional<input name="os" required maxlength="100" placeholder="Ex. dArkOSre e versão"></label></div>
 <label>Versão do PORT HUB <small>(opcional)</small><input name="hub_version" maxlength="50" placeholder="Ex. 0.5.5 BETA"></label>
 <label>O que aconteceu?<textarea name="description" required maxlength="4000" rows="5" placeholder="Inclua os passos, o resultado esperado e a mensagem de erro."></textarea></label>
-<label>Foto ou arquivo de log <small>(opcional)</small><input name="attachment" type="file" accept=".png,.jpg,.jpeg,.webp,.txt,.log"></label><small>PNG, JPG, WebP, TXT ou LOG até 4 MB. Remova senhas e dados pessoais.</small>
+<label class="upload"><strong>Anexar foto ou log <small>(opcional)</small></strong><small>PNG, JPG, WebP, TXT ou LOG até 4 MB.</small><input name="attachment" type="file" accept=".png,.jpg,.jpeg,.webp,.txt,.log"></label><small>Remova senhas e dados pessoais antes de anexar.</small>
 <button>Enviar chamado</button></form></section>
-<section class="panel"><div class="section-head"><h2 id="list-title">Meus chamados</h2><button id="refresh" class="secondary">Atualizar</button></div><label>Filtrar por status<select id="filter"><option value="">Todos</option><option value="open">Recebido</option><option value="working">Em correção</option><option value="resolved">Resolvido</option></select></label><div id="tickets"></div><div class="actions"><button id="prev" class="secondary" hidden>Anterior</button><button id="next" class="secondary" hidden>Próxima</button></div></section>
+<section class="panel"><div class="section-head"><h2 id="list-title">Meus chamados</h2><button id="refresh" class="secondary">Atualizar</button></div><label>Filtrar por status<select id="filter"><option value="">Todos os status</option><option value="open">Recebido</option><option value="working">Em correção</option><option value="resolved">Resolvido</option></select></label><div id="tickets"></div><div class="actions"><button id="prev" class="secondary" hidden>Anterior</button><button id="next" class="secondary" hidden>Próxima</button></div></section>
 </div></div>
 </main>
 <footer class="wrap">R36S PORT HUB · Suporte da comunidade</footer>

@@ -103,14 +103,15 @@ function printTicket(ticket) {
 function renderTicket(ticket) {
   const card = node("details");
   card.className = "ticket";
-  const summary = node("summary", ticket.title);
-  const status = node("p", statusLabels[ticket.status] + " · " + ticket.progress + "%");
-  status.className = "status";
+  const summary = node("summary");
+  const status = node("span", statusLabels[ticket.status] + " · " + ticket.progress + "%");
+  status.className = "status status-" + ticket.status;
+  summary.append(node("span", ticket.title), status);
   const bar = node("progress");
   bar.max = 100;
   bar.value = ticket.progress;
   bar.setAttribute("aria-label", "Progresso da correção");
-  card.append(summary, status, bar, node("p", [ticket.console_model, ticket.os, ticket.hub_version].filter(Boolean).join(" · ")),
+  card.append(summary, bar, node("p", [ticket.console_model, ticket.os, ticket.hub_version].filter(Boolean).join(" · ")),
     node("small", new Date(ticket.created_at).toLocaleString("pt-BR")), node("p", ticket.description));
   if (ticket.resolution) card.append(node("strong", "Atualização da equipe"), node("p", ticket.resolution));
   if (ticket.attachment_name) {
@@ -258,6 +259,13 @@ async function encodeAttachment(file) {
 }
 
 function start() {
+  const password = byId("login-password");
+  const toggle = byId("toggle-password");
+  toggle.onclick = () => {
+    const visible = password.type === "password";
+    password.type = visible ? "text" : "password";
+    toggle.textContent = visible ? "Ocultar" : "Mostrar";
+  };
   if (!config?.url || !config?.publishableKey || !window.supabase) {
     message("O portal aguarda a ativação do serviço de contas e chamados.");
     byId("auth").querySelectorAll("button,input").forEach((element) => { element.disabled = true; });
