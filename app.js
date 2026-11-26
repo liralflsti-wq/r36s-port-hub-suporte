@@ -50,8 +50,8 @@ function rtfText(value) {
   });
 }
 
-function exportTicket(ticket) {
-  const fields = [
+function ticketExportFields(ticket) {
+  return [
     ["Protocolo", ticket.id],
     ["Título", ticket.title],
     ["Data de abertura", new Date(ticket.created_at).toLocaleString("pt-BR")],
@@ -64,7 +64,10 @@ function exportTicket(ticket) {
     ["Atualização da equipe", ticket.resolution || "Sem atualização"],
     ["Anexo", ticket.attachment_name || "Sem anexo"]
   ];
-  const paragraphs = fields.map(([label, value]) =>
+}
+
+function exportTicket(ticket) {
+  const paragraphs = ticketExportFields(ticket).map(([label, value]) =>
     "\\b " + rtfText(label) + "\\b0\\line " + rtfText(value) + "\\par\\par "
   ).join("");
   const documentText = "{\\rtf1\\ansi\\uc1\\deff0{\\fonttbl{\\f0 Arial;}}"
@@ -76,6 +79,25 @@ function exportTicket(ticket) {
   link.download = "chamado-r36s-" + ticket.id + ".rtf";
   link.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function printTicket(ticket) {
+  document.getElementById("ticket-print-document")?.remove();
+  const sheet = node("article");
+  sheet.id = "ticket-print-document";
+  sheet.append(node("h1", "R36S PORT HUB"), node("p", "Central de suporte"));
+  const fields = node("dl");
+  for (const [label, value] of ticketExportFields(ticket)) {
+    fields.append(node("dt", label), node("dd", value));
+  }
+  sheet.append(fields);
+  document.body.append(sheet);
+  document.body.classList.add("printing-ticket");
+  window.addEventListener("afterprint", () => {
+    sheet.remove();
+    document.body.classList.remove("printing-ticket");
+  }, {once: true});
+  window.print();
 }
 
 function renderTicket(ticket) {
@@ -112,7 +134,10 @@ function renderTicket(ticket) {
     exportButton.onclick = () => exportTicket(ticket);
     const actions = node("div");
     actions.className = "actions";
-    actions.append(exportButton);
+    const pdfButton = node("button", "Exportar para PDF");
+    pdfButton.className = "secondary";
+    pdfButton.onclick = () => printTicket(ticket);
+    actions.append(exportButton, pdfButton);
     card.append(actions, editTicket(ticket));
   }
   return card;
