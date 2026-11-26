@@ -58,4 +58,8 @@ create policy "Administrador atualiza chamados" on public.support_tickets
   for update to authenticated using ((select public.support_is_admin()))
   with check ((select public.support_is_admin()));
 
+grant delete on public.support_tickets to authenticated;
+create policy "Administrador exclui chamados" on public.support_tickets
+  for delete to authenticated using ((select public.support_is_admin()));
+
 commit;

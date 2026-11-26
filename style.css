@@ -15,3 +15,5 @@
   #ticket-print-document dt{font-weight:700;margin-top:10pt;break-after:avoid}
   #ticket-print-document dd{margin:0;white-space:pre-wrap}
 }
+
+button.secondary.danger{color:#ff9cb8;border-color:#ff7099}

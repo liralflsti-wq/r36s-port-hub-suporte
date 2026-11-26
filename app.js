@@ -137,7 +137,18 @@ function renderTicket(ticket) {
     const pdfButton = node("button", "Exportar para PDF");
     pdfButton.className = "secondary";
     pdfButton.onclick = () => printTicket(ticket);
-    actions.append(exportButton, pdfButton);
+    const deleteButton = node("button", "Excluir chamado");
+    deleteButton.className = "secondary danger";
+    deleteButton.onclick = () => {
+      if (!window.confirm("Excluir este chamado e seu anexo permanentemente?")) return;
+      busy(card, async () => {
+        checked(await client.from("support_tickets").delete().eq("id", ticket.id).select("id").single());
+        page = 0;
+        await loadTickets();
+        message("Chamado excluído.");
+      });
+    };
+    actions.append(exportButton, pdfButton, deleteButton);
     card.append(actions, editTicket(ticket));
   }
   return card;
