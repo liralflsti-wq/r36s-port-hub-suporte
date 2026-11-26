@@ -34,4 +34,4 @@ input,textarea,select,button{border-radius:9px}input,textarea,select{border-colo
 @media(max-width:480px){.hero{grid-template-columns:minmax(0,1fr) auto;gap:9px}.hero h1{font-size:clamp(1.65rem,8.2vw,2.65rem)}.hero .eyebrow{font-size:.68rem}.hero p:last-child{font-size:.88rem}.ticket summary{flex-wrap:wrap}.bar nav a{font-size:.82rem}}
 }
 
-.hero-console{display:block;width:clamp(86px,24vw,215px);height:auto;border-radius:12px;box-shadow:0 12px 30px #09051155}
+.hero-console{display:block;width:clamp(72px,19vw,145px);height:auto;filter:drop-shadow(0 12px 18px #09051188)}
