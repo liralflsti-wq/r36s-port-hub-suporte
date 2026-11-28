@@ -62,4 +62,13 @@ grant delete on public.support_tickets to authenticated;
 create policy "Administrador exclui chamados" on public.support_tickets
   for delete to authenticated using ((select public.support_is_admin()));
 
+alter table public.support_tickets add column author_username text
+  check (char_length(author_username) between 2 and 60);
+
+alter table public.support_tickets alter column author_username set default (
+  case when jsonb_typeof(auth.jwt() -> 'user_metadata' -> 'support_username') = 'string'
+    and char_length(btrim(auth.jwt() -> 'user_metadata' ->> 'support_username')) between 2 and 60
+  then btrim(auth.jwt() -> 'user_metadata' ->> 'support_username') end
+);
+
 commit;

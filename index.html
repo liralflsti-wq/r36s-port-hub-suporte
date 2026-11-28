@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="./style.css?v=9">
 <script defer src="./vendor/supabase-2.49.4.js"></script>
 <script defer src="./config.js?v=2"></script>
-<script defer src="./app.js?v=7"></script>
+<script defer src="./app.js?v=8"></script>
 </head>
 <body>
 <header class="top"><div class="wrap bar"><a class="brand" href="./"><span class="pixel" aria-hidden="true">+</span> R36S PORT HUB</a><nav aria-label="Conta"><a href="https://github.com/liralflsti-wq/r36s-port-hub">Projeto no GitHub</a><button id="logout" class="secondary" hidden>Sair</button></nav></div></header>
@@ -17,7 +17,13 @@
 <p id="message" class="message" role="status" aria-live="polite" hidden></p>
 <section class="panel" id="auth">
 <h2>Acesse sua conta</h2><p>Entre para enviar fotos ou logs e acompanhar seus chamados.</p>
-<form id="login"><label>E-mail<input name="email" placeholder="voce@exemplo.com" type="email" autocomplete="email" required></label><label for="login-password">Senha</label><div class="password-field"><input id="login-password" name="password" type="password" autocomplete="current-password" minlength="8" required><button id="toggle-password" class="secondary" type="button" aria-controls="login-password">Mostrar</button></div><div class="actions"><button value="login">Entrar</button><button class="secondary" value="signup">Criar conta</button><button type="button" class="secondary" id="recover">Redefinir senha</button></div></form>
+<form id="login"><label>E-mail<input name="email" placeholder="voce@exemplo.com" type="email" autocomplete="email" required></label><label for="login-password">Senha</label><div class="password-field"><input id="login-password" name="password" type="password" autocomplete="current-password" minlength="8" required><button id="toggle-password" class="secondary" type="button" aria-controls="login-password">Mostrar</button></div><div class="actions"><button value="login">Entrar</button><button class="secondary" type="button" id="open-signup">Criar conta</button><button type="button" class="secondary" id="recover">Redefinir senha</button></div></form>
+<form id="signup" hidden>
+<label>Nome de usuário<input name="username" autocomplete="nickname" minlength="2" maxlength="60" required></label>
+<label>E-mail<input name="email" type="email" autocomplete="email" required></label>
+<label>Senha<input name="password" type="password" autocomplete="new-password" minlength="8" required></label>
+<div class="actions"><button>Criar conta</button><button class="secondary" type="button" id="back-to-login">Voltar para entrar</button></div>
+</form>
 <form id="reset" hidden><label>Nova senha<input name="password" type="password" autocomplete="new-password" minlength="8" required></label><button>Salvar senha</button></form>
 </section>
 <div id="workspace" hidden><p id="account"></p><div class="workspace">

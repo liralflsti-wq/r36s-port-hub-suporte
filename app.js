@@ -54,6 +54,7 @@ function ticketExportFields(ticket) {
   return [
     ["Protocolo", ticket.id],
     ["Título", ticket.title],
+    ["Aberto por", ticket.author_username || "Nome não informado"],
     ["Data de abertura", new Date(ticket.created_at).toLocaleString("pt-BR")],
     ["Modelo do console", ticket.console_model],
     ["Sistema operacional", ticket.os],
@@ -113,6 +114,7 @@ function renderTicket(ticket) {
   bar.setAttribute("aria-label", "Progresso da correção");
   card.append(summary, bar, node("p", [ticket.console_model, ticket.os, ticket.hub_version].filter(Boolean).join(" · ")),
     node("small", new Date(ticket.created_at).toLocaleString("pt-BR")), node("p", ticket.description));
+  if (admin) card.append(node("p", "Aberto por: " + (ticket.author_username || "Nome não informado")));
   if (ticket.resolution) card.append(node("strong", "Atualização da equipe"), node("p", ticket.resolution));
   if (ticket.attachment_name) {
     const download = node("button", "Baixar " + ticket.attachment_name);
@@ -192,7 +194,7 @@ async function loadTickets(expandedId) {
   byId("next").hidden = true;
   try {
     let query = client.from("support_tickets")
-      .select("id,title,console_model,os,hub_version,description,status,progress,resolution,attachment_name,created_at")
+      .select("id,title,console_model,os,hub_version,description,status,progress,resolution,attachment_name,created_at,author_username")
       .order("created_at", {ascending: false}).order("id").range(page * pageSize, (page + 1) * pageSize);
     const filter = byId("filter").value;
     if (filter) query = query.eq("status", filter);
@@ -215,7 +217,11 @@ async function showSession(session) {
   user = session?.user;
   byId("logout").hidden = !user;
   byId("auth").hidden = Boolean(user && !recovery);
-  byId("login").hidden = recovery;
+  byId("login").hidden = recovery || !byId("signup").hidden;
+  if (user || recovery) {
+    byId("signup").hidden = true;
+    byId("login").hidden = recovery;
+  }
   byId("reset").hidden = !recovery;
   byId("workspace").hidden = true;
   if (!user || recovery) {
@@ -282,15 +288,43 @@ function start() {
     setTimeout(() => showSession(session).catch(() => message("Erro ao carregar a conta.")), 0);
   });
 
-  onSubmit("login", async (data, action) => {
-    const credentials = {email: data.get("email"), password: data.get("password")};
-    if (action === "signup") {
-      const result = checked(await client.auth.signUp({...credentials, options: {emailRedirectTo: redirectTo}}));
-      message(result.session ? "Conta criada." : "Confira seu e-mail para confirmar o cadastro.");
-    } else {
-      const result = await client.auth.signInWithPassword(credentials);
-      message(result.error ? "Falha ao entrar. Confira a senha e a confirmação do e-mail." : "");
+  const login = byId("login");
+  const signup = byId("signup");
+  byId("open-signup").onclick = () => {
+    signup.elements.email.value = login.elements.email.value;
+    login.hidden = true;
+    signup.hidden = false;
+    signup.elements.username.focus();
+    message("");
+  };
+  byId("back-to-login").onclick = () => {
+    login.elements.email.value = signup.elements.email.value;
+    signup.reset();
+    signup.hidden = true;
+    login.hidden = false;
+    login.elements.email.focus();
+    message("");
+  };
+  onSubmit("login", async (data) => {
+    const result = await client.auth.signInWithPassword({email: data.get("email"), password: data.get("password")});
+    message(result.error ? "Falha ao entrar. Confira a senha e a confirmação do e-mail." : "");
+  });
+  onSubmit("signup", async (data) => {
+    const username = data.get("username").trim();
+    if (username.length < 2 || username.length > 60) {
+      message("Informe um nome de usuário de 2 a 60 caracteres.");
+      return;
     }
+    const result = checked(await client.auth.signUp({
+      email: data.get("email"),
+      password: data.get("password"),
+      options: {emailRedirectTo: redirectTo, data: {support_username: username}}
+    }));
+    login.elements.email.value = data.get("email");
+    signup.reset();
+    signup.hidden = true;
+    login.hidden = false;
+    message(result.session ? "Conta criada." : "Confira seu e-mail para confirmar o cadastro.");
   });
   byId("recover").onclick = () => busy(byId("auth"), async () => {
     const email = byId("login").elements.email;
