@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="./style.css?v=9">
 <script defer src="./vendor/supabase-2.49.4.js"></script>
 <script defer src="./config.js?v=2"></script>
-<script defer src="./app.js?v=8"></script>
+<script defer src="./app.js?v=9"></script>
 </head>
 <body>
 <header class="top"><div class="wrap bar"><a class="brand" href="./"><span class="pixel" aria-hidden="true">+</span> R36S PORT HUB</a><nav aria-label="Conta"><a href="https://github.com/liralflsti-wq/r36s-port-hub">Projeto no GitHub</a><button id="logout" class="secondary" hidden>Sair</button></nav></div></header>
@@ -36,7 +36,7 @@
 <label>O que aconteceu?<textarea name="description" required maxlength="4000" rows="5" placeholder="Inclua os passos, o resultado esperado e a mensagem de erro."></textarea></label>
 <label class="upload"><strong>Anexar foto ou log <small>(opcional)</small></strong><small>PNG, JPG, WebP, TXT ou LOG até 4 MB.</small><input name="attachment" type="file" accept=".png,.jpg,.jpeg,.webp,.txt,.log"></label><small>Remova senhas e dados pessoais antes de anexar.</small>
 <button>Enviar chamado</button></form></section>
-<section class="panel"><div class="section-head"><h2 id="list-title">Meus chamados</h2><button id="refresh" class="secondary">Atualizar</button></div><label>Filtrar por status<select id="filter"><option value="">Todos os status</option><option value="open">Recebido</option><option value="working">Em correção</option><option value="resolved">Resolvido</option></select></label><div id="tickets"></div><div class="actions"><button id="prev" class="secondary" hidden>Anterior</button><button id="next" class="secondary" hidden>Próxima</button></div></section>
+<section class="panel"><div class="section-head"><h2 id="list-title">Meus chamados</h2><button id="refresh" class="secondary">Atualizar</button></div><label>Filtrar por status<select id="filter"><option value="">Todos os status</option><option value="open">Recebido</option><option value="working">Em correção</option><option value="pending_confirmation">Aguardando confirmação</option><option value="resolved">Resolvido</option></select></label><div id="tickets"></div><div class="actions"><button id="prev" class="secondary" hidden>Anterior</button><button id="next" class="secondary" hidden>Próxima</button></div></section>
 </div></div>
 </main>
 <footer class="wrap">R36S PORT HUB · Suporte da comunidade</footer>

@@ -1,7 +1,11 @@
 "use strict";
 
 const byId = (id) => document.getElementById(id);
-const statusLabels = {open: "Recebido", working: "Em correção", resolved: "Resolvido"};
+const statusLabels = {
+  open: "Recebido", working: "Em correção",
+  pending_confirmation: "Aguardando confirmação", resolved: "Resolvido"
+};
+const feedbackLabels = {confirmed: "Autor confirmou a correção", failed: "Autor informou que o erro continua"};
 const config = window.PORT_HUB_CONFIG;
 const redirectTo = location.origin + location.pathname;
 const pageSize = 15;
@@ -60,6 +64,7 @@ function ticketExportFields(ticket) {
     ["Sistema operacional", ticket.os],
     ["Versão do Hub", ticket.hub_version || "Não informada"],
     ["Status", statusLabels[ticket.status]],
+    ["Feedback", feedbackLabels[ticket.correction_feedback] || "Sem resposta"],
     ["Progresso", ticket.progress + "%"],
     ["Descrição", ticket.description],
     ["Atualização da equipe", ticket.resolution || "Sem atualização"],
@@ -131,6 +136,7 @@ function renderTicket(ticket) {
     });
     card.append(download);
   }
+  card.append(renderFeedback(ticket));
   if (admin) {
     const exportButton = node("button", "Exportar para Word");
     exportButton.className = "secondary";
@@ -157,6 +163,43 @@ function renderTicket(ticket) {
   return card;
 }
 
+function renderFeedback(ticket) {
+  const section = node("section");
+  section.append(node("h3", "Feedback da correção"));
+  if (feedbackLabels[ticket.correction_feedback]) {
+    section.append(node("p", feedbackLabels[ticket.correction_feedback] + "."));
+  } else if (ticket.status === "pending_confirmation") {
+    section.append(node("p", "A equipe marcou a correção como concluída. O chamado aguarda a confirmação do autor."));
+    if (ticket.owner_id === user?.id) {
+      const actions = node("div");
+      actions.className = "actions";
+      const confirm = node("button", "Deu certo");
+      const reject = node("button", "O erro não foi resolvido");
+      reject.className = "secondary";
+      const submit = (resolved) => busy(actions, async () => {
+        const saved = checked(await client.rpc("support_submit_correction_feedback", {
+          ticket_id: ticket.id, revision: ticket.correction_revision, resolved
+        }));
+        message(saved
+          ? (resolved ? "Correção confirmada. O chamado foi encerrado." : "O chamado voltou para Em correção.")
+          : "Este chamado foi atualizado. Confira a situação antes de responder.");
+        if (saved && byId("filter").value) {
+          byId("filter").value = "";
+          page = 0;
+        }
+        await loadTickets(ticket.id);
+      });
+      confirm.onclick = () => submit(true);
+      reject.onclick = () => submit(false);
+      actions.append(confirm, reject);
+      section.append(actions);
+    }
+  } else {
+    section.append(node("p", "Você poderá enviar feedback quando a equipe indicar que concluiu a correção."));
+  }
+  return section;
+}
+
 function editTicket(ticket) {
   const form = node("form");
   const note = node("textarea");
@@ -173,7 +216,7 @@ function editTicket(ticket) {
   progress.value = ticket.progress;
   const progressLabel = node("label", "Progresso da correção (0 a 100%)");
   progressLabel.append(progress);
-  form.append(noteLabel, progressLabel, node("button", "Salvar atualização"));
+  form.append(noteLabel, progressLabel, node("small", "Ao chegar a 100%, o chamado aguarda a confirmação do autor."), node("button", "Salvar atualização"));
   form.onsubmit = (event) => {
     event.preventDefault();
     busy(form, async () => {
@@ -194,10 +237,10 @@ async function loadTickets(expandedId) {
   byId("next").hidden = true;
   try {
     let query = client.from("support_tickets")
-      .select("id,title,console_model,os,hub_version,description,status,progress,resolution,attachment_name,created_at,author_username")
+      .select("id,title,console_model,os,hub_version,description,status:support_state,progress,resolution,attachment_name,created_at,author_username,owner_id,correction_feedback,correction_revision")
       .order("created_at", {ascending: false}).order("id").range(page * pageSize, (page + 1) * pageSize);
     const filter = byId("filter").value;
-    if (filter) query = query.eq("status", filter);
+    if (filter) query = query.eq("support_state", filter);
     const rows = checked(await query);
     if (currentRequest !== requestId) return;
     byId("tickets").replaceChildren(...rows.slice(0, pageSize).map((ticket) => {

@@ -71,4 +71,69 @@ alter table public.support_tickets alter column author_username set default (
   then btrim(auth.jwt() -> 'user_metadata' ->> 'support_username') end
 );
 
+alter table public.support_tickets
+  add column correction_feedback text check (correction_feedback in ('confirmed', 'failed')),
+  add column correction_revision uuid not null default gen_random_uuid();
+
+alter table public.support_tickets
+  add column support_state text generated always as (
+    case
+      when progress = 100 and correction_feedback = 'confirmed' then 'resolved'
+      when progress = 100 then 'pending_confirmation'
+      when progress > 0 or correction_feedback = 'failed' then 'working'
+      else 'open'
+    end
+  ) stored;
+
+create function public.support_reset_correction_feedback() returns trigger
+language plpgsql set search_path = ''
+as $
+begin
+  if new.correction_feedback is not distinct from old.correction_feedback
+     and (new.progress is distinct from old.progress or new.resolution is distinct from old.resolution) then
+    new.correction_revision := gen_random_uuid();
+    if new.progress = 100 or old.correction_feedback = 'confirmed' then
+      new.correction_feedback := null;
+    end if;
+  end if;
+  return new;
+end;
+$;
+revoke all on function public.support_reset_correction_feedback() from public, anon, authenticated;
+
+create trigger support_reset_correction_feedback
+before update of progress, resolution on public.support_tickets
+for each row execute function public.support_reset_correction_feedback();
+
+create schema if not exists support_private;
+grant usage on schema support_private to authenticated;
+
+create function support_private.submit_correction_feedback(ticket_id uuid, revision uuid, resolved boolean)
+returns boolean
+language sql security definer set search_path = ''
+as $
+  with updated as (
+    update public.support_tickets
+    set correction_feedback = case when resolved then 'confirmed' else 'failed' end,
+        progress = case when resolved then 100 else 99 end
+    where id = ticket_id and owner_id = (select auth.uid())
+      and correction_revision = revision and support_state = 'pending_confirmation'
+      and resolved is not null
+    returning id
+  )
+  select exists (select 1 from updated);
+$;
+
+create function public.support_submit_correction_feedback(ticket_id uuid, revision uuid, resolved boolean)
+returns boolean
+language sql security invoker set search_path = ''
+as $
+  select support_private.submit_correction_feedback(ticket_id, revision, resolved);
+$;
+
+revoke all on function support_private.submit_correction_feedback(uuid, uuid, boolean) from public, anon, authenticated;
+revoke all on function public.support_submit_correction_feedback(uuid, uuid, boolean) from public, anon, authenticated;
+grant execute on function support_private.submit_correction_feedback(uuid, uuid, boolean) to authenticated;
+grant execute on function public.support_submit_correction_feedback(uuid, uuid, boolean) to authenticated;
+
 commit;
